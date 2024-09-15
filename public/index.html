@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Checkbox</title>
+  <style>
+    /* Full page layout */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: sans-serif;
+      background-color: orange;
+      color: white;
+    }
+
+    /* Container for the header (text) */
+    header {
+      text-align: center;
+      padding: 0px;
+      font-size: 24px;
+    }
+
+    /* Center the checkbox vertically in the remaining space */
+    .checkbox-container {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Increase the size of the checkbox */
+    input[type="checkbox"] {
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+
+    label {
+      font-size: 24px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>1 Checkbox</h1>
+  </header>
+
+  <div class="checkbox-container">
+    <label>
+      <input type="checkbox" id="liveCheckbox" />
+    </label>
+  </div>
+
+  <script>
+    const checkbox = document.getElementById('liveCheckbox');
+
+    // Establish WebSocket connection
+    const socket = new WebSocket(`ws://${window.location.host}`);
+
+    // Handle incoming WebSocket messages
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      checkbox.checked = data.isChecked;
+    };
+
+    // Send the checkbox state when changed
+    checkbox.addEventListener('change', () => {
+      const isChecked = checkbox.checked;
+      socket.send(JSON.stringify({ isChecked }));
+    });
+  </script>
+  
+</body>
+</html>
