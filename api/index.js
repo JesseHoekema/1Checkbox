@@ -3,33 +3,27 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 
-// Initialize the Express app and HTTP server
+// Create Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// Serve static files (frontend)
-app.use(express.static('public'));
-
-// Serve the main HTML file for the root route
+// Serve the main HTML file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '../index.html')); // Adjust path for Vercel
 });
 
 // Track the checkbox state (default: unchecked)
 let isChecked = false;
 
-// WebSocket connection logic
+// WebSocket logic
 wss.on('connection', (ws) => {
-  // Send the current checkbox state to the newly connected client
   ws.send(JSON.stringify({ isChecked }));
 
-  // Handle message from client
   ws.on('message', (message) => {
     const data = JSON.parse(message);
     if (data.hasOwnProperty('isChecked')) {
       isChecked = data.isChecked;
-      // Broadcast the new checkbox state to all clients
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify({ isChecked }));
@@ -39,8 +33,5 @@ wss.on('connection', (ws) => {
   });
 });
 
-// Start the server
-const PORT = process.env.PORT || 80;
-server.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+// Export the server as Vercel expects it
+module.exports = server;
