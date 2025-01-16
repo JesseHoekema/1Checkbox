@@ -60,7 +60,7 @@
     const checkbox = document.getElementById('liveCheckbox');
 
     // Establish WebSocket connection
-    const socket = new WebSocket(`ws://10.0.1.182`);
+    const socket = new WebSocket(`ws://10.0.1.182/api/`);
 
     // Handle incoming WebSocket messages
     socket.onmessage = (event) => {
